@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
-import re
+import re #для проверок логина и тд
 
 app = Flask(__name__)
 app.secret_key = 'secretkey2026'
@@ -9,7 +9,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-# таблица пользователей
+#таблица пользователей
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(80), unique=True, nullable=False)
@@ -17,9 +17,7 @@ class User(db.Model):
     fio = db.Column(db.String(200), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(120), nullable=False)
-
-
-# таблица заявок
+#таблица заявок
 class Request(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -27,8 +25,10 @@ class Request(db.Model):
     start_date = db.Column(db.String(20), nullable=False)
     payment_method = db.Column(db.String(50), nullable=False)
     status = db.Column(db.String(50), default='Новое')
+    review = db.Column(db.Text, nullable=True)
 
-# валидация
+
+#валидация
 def valid_login(login):
     return re.match(r'^[a-zA-Z0-9]{6,}$', login) is not None
 
@@ -45,10 +45,10 @@ def valid_date(date):
     return re.match(r'^\d{2}\.\d{2}\.\d{4}$', date) is not None
 
 
+#роуты страничек
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -78,7 +78,6 @@ def register():
     
     return render_template('register.html', error=error)
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -86,26 +85,25 @@ def login():
         login = request.form['login']
         password = request.form['password']
         
-        # вход в админку
+        #вход в админку
         if login == 'Admin26' and password == 'Demo20':
             session['admin'] = True
             return redirect(url_for('admin'))
         
+        #пользовательский вход
         user = User.query.filter_by(login=login, password=password).first()
         if user:
             session['user_id'] = user.id
-            return redirect(url_for('index'))
+            return redirect(url_for('my'))
         else:
             error = 'Неверный логин или пароль'
     
     return render_template('login.html', error=error)
 
-
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('index'))
-
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():
@@ -134,7 +132,6 @@ def create():
     
     return render_template('create.html', error=error)
 
-
 @app.route('/my')
 def my():
     if not session.get('user_id'):
@@ -143,7 +140,6 @@ def my():
     requests = Request.query.filter_by(user_id=session['user_id']).all()
     return render_template('my_requests.html', requests=requests)
 
-
 @app.route('/admin')
 def admin():
     if not session.get('admin'):
@@ -151,7 +147,6 @@ def admin():
     
     all_requests = Request.query.all()
     return render_template('admin.html', requests=all_requests)
-
 
 @app.route('/status/<int:rid>/<status>')
 def status(rid, status):
@@ -163,6 +158,22 @@ def status(rid, status):
         req.status = status
         db.session.commit()
     return redirect(url_for('admin'))
+
+@app.route('/review/<int:rid>', methods=['GET', 'POST'])
+def review(rid):
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+    
+    req = Request.query.get(rid)
+    if not req or req.user_id != session['user_id']:
+        return redirect(url_for('my'))
+    
+    if request.method == 'POST':
+        req.review = request.form['review']
+        db.session.commit()
+        return redirect(url_for('my'))
+    
+    return render_template('review.html', req=req)
 
 if __name__ == '__main__':
     with app.app_context():
