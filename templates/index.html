@@ -8,7 +8,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'PT Sans', sans-serif; background: #ffffff; }
         .header { background: #0d47a1; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .logo { color: #ffffff; font-size: 24px; font-weight: bold; }
+        .logo { color: #ffffff; font-size: 30px; font-weight: bold; }
         .logo span { color: #ffc107; }
         .auth a { margin-left: 15px; padding: 8px 20px; text-decoration: none; border-radius: 5px; transition: all 0.3s; display: inline-block; }
         .auth .btn-login { background: transparent; border: 1px solid #ffffff; color: #ffffff; }
@@ -52,12 +52,16 @@
 </head>
 <body>
     <div class="header">
-        <div class="logo">Портал "Пассажирам.РФ"
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Команда">
+        <div class="logo">"Пассажирам.РФ"
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Лого">
         </div>
         <div class="auth">
-            <a href="/login" class="btn-login">Вход</a>
-            <a href="/register" class="btn-register">Регистрация</a>
+            {% if session.user_id %}
+                <a href="/logout" class="btn-logout">Выйти</a>
+            {% else %}
+                <a href="/login" class="btn-login">Вход</a>
+                <a href="/register" class="btn-register">Регистрация</a>
+            {% endif %}
         </div>
     </div>
 
