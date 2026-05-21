@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Портал пассажирских перевозок РФ</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'PT Sans', sans-serif; background: #ffffff; }
+        .header { background: #0d47a1; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .logo { color: #ffffff; font-size: 24px; font-weight: bold; }
+        .logo span { color: #ffc107; }
+        .auth a { margin-left: 15px; padding: 8px 20px; text-decoration: none; border-radius: 5px; transition: all 0.3s; display: inline-block; }
+        .auth .btn-login { background: transparent; border: 1px solid #ffffff; color: #ffffff; }
+        .auth .btn-login:hover { background: #ffffff; color: #0d47a1; transform: scale(1.05); }
+        .auth .btn-register { background: #ffc107; color: #0d47a1; }
+        .auth .btn-register:hover { background: #e0a800; transform: scale(1.05); }
+        .hero-section { text-align: center; padding: 40px 20px 0 20px; }
+        .hero-section h1 { color: #0d47a1; font-size: 36px; margin-bottom: 15px; }
+        .hero-section p { color: #6c757d; font-size: 18px; max-width: 800px; margin: 0 auto; line-height: 1.5; }
+        .slider-container { max-width: 1000px; margin: 30px auto 40px auto; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; }
+        .slider { position: relative; height: 400px; }
+        .slides { position: relative; height: 100%; }
+        .slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 0.5s ease-in-out; }
+        .slide.active { opacity: 1; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
+        .slide-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: #ffffff; padding: 20px; text-align: center; font-size: 18px; font-weight: bold; }
+        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: #ffffff; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 20px; transition: all 0.3s; z-index: 10; }
+        .slider-btn:hover { background: rgba(0,0,0,0.8); transform: translateY(-50%) scale(1.1); }
+        .prev { left: 15px; }
+        .next { right: 15px; }
+        .dots { text-align: center; padding: 15px; background: #ffffff; }
+        .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #6c757d; margin: 0 5px; cursor: pointer; transition: all 0.3s; }
+        .dot:hover { background: #0d47a1; transform: scale(1.2); }
+        .dot.active { background: #0d47a1; }
+        .footer { text-align: center; padding: 25px; background: #0d47a1; color: #ffffff; margin-top: 40px; }
+        @media (max-width: 768px) {
+            .header { padding: 15px 20px; }
+            .logo { font-size: 18px; }
+            .auth a { padding: 6px 12px; font-size: 12px; margin-left: 8px; }
+            .hero-section h1 { font-size: 24px; }
+            .hero-section p { font-size: 14px; padding: 0 15px; }
+            .slider { height: 250px; }
+            .slider-btn { width: 30px; height: 30px; font-size: 14px; }
+            .slide-caption { font-size: 12px; padding: 10px; }
+        }
+        @media (max-width: 390px) {
+            .hero-section h1 { font-size: 20px; }
+            .slider { height: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Портал "Пассажирам.РФ"
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Команда">
+        </div>
+        <div class="auth">
+            <a href="/login" class="btn-login">Вход</a>
+            <a href="/register" class="btn-register">Регистрация</a>
+        </div>
+    </div>
+
+    <div class="hero-section">
+        <h1>Добро пожаловать на портал!</h1>
+        <p>Запишитесь на курсы обучения водителей автобусов, электробусов и трамваев.<br>Пройдите обучение и получите водительское удостоверение категории "D".</p>
+    </div>
+
+    <div class="slider-container">
+        <div class="slider">
+            <button class="slider-btn prev" id="prevBtn">+</button>
+            <button class="slider-btn next" id="nextBtn">+</button>
+            <div class="slides">
+                <div class="slide active">
+                    <img src="{{ url_for('static', filename='img/komanda.png') }}" alt="Команда">
+                    <div class="slide-caption">Ждем тебя в нашу команду</div>
+                </div>
+                <div class="slide active">
+                    <img src="{{ url_for('static', filename='img/auto.png') }}" alt="Автобус">
+                    <div class="slide-caption">Обучение вождению автобуса</div>
+                </div>
+                <div class="slide">
+                    <img src="{{ url_for('static', filename='img/electro.png') }}" alt="Электробус">
+                    <div class="slide-caption">Обучение вождению электробуса</div>
+                </div>
+                <div class="slide">
+                    <img src="{{ url_for('static', filename='img/tramv.png') }}" alt="Трамвай">
+                    <div class="slide-caption">Обучение вождению трамвая</div>
+                </div>
+            </div>
+        </div>
+        <div class="dots">
+            <span class="dot active" data-index="0"></span>
+            <span class="dot" data-index="1"></span>
+            <span class="dot" data-index="2"></span>
+            <span class="dot" data-index="3"></span>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>2026 Портал пассажирских перевозок РФ</p>
+        <p style="font-size: 12px; margin-top: 5px;">Обучение водителей автобусов, электробусов, трамваев</p>
+    </div>
+
+    <script>
+        let slideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function showSlide(index) {
+            if (index >= slides.length) slideIndex = 0;
+            if (index < 0) slideIndex = slides.length - 1;
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            slides[slideIndex].classList.add('active');
+            if (dots[slideIndex]) dots[slideIndex].classList.add('active');
+        }
+
+        function changeSlide(direction) {
+            slideIndex += direction;
+            showSlide(slideIndex);
+        }
+
+        function currentSlide(index) {
+            slideIndex = index;
+            showSlide(slideIndex);
+        }
+
+        if (prevBtn) prevBtn.onclick = function() { changeSlide(-1); };
+        if (nextBtn) nextBtn.onclick = function() { changeSlide(1); };
+
+        dots.forEach((dot, i) => {
+            dot.onclick = function() { currentSlide(i); };
+        });
+
+        let autoSlide = setInterval(() => {
+            slideIndex++;
+            showSlide(slideIndex);
+        }, 3000);
+
+        const sliderContainer = document.querySelector('.slider-container');
+        sliderContainer.addEventListener('mouseenter', () => clearInterval(autoSlide));
+        sliderContainer.addEventListener('mouseleave', () => {
+            autoSlide = setInterval(() => {
+                slideIndex++;
+                showSlide(slideIndex);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
