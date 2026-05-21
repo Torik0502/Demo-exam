@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Новая заявка</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 50px; }
+        .container { max-width: 500px; margin: 0 auto; background: #ffffff; border-radius: 10px; padding: 30px; }
+        h1 { text-align: center; margin-bottom: 20px; color: #1e3c72; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        select, input { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ffffff; border-radius: 5px; }
+        button { width: 100%; padding: 12px; background: #28a745; color: #ffffff; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #218838; transform: scale(1.02); }
+        .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 20px; text-align: center; }
+        .back { margin-top: 20px; display: block; text-align: center; }
+        .back a { color: #1e3c72; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Новая заявка на обучение</h1>
+        
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <!--выпадающий список-->
+        <form method="POST">
+            <label>Выберите курс:</label>
+            <select name="course_name" required>
+                <option value="Автобус">Автобус</option>
+                <option value="Электробус">Электробус</option>
+                <option value="Трамвай">Трамвай</option>
+            </select>
+            
+            <label>Дата начала обучения (ДД.ММ.ГГГГ):</label>
+            <input type="text" name="start_date" placeholder="ДД.ММ.ГГГГ" required>
+            <!--тоже выпадающий список-->
+            <label>Способ оплаты:</label>
+            <select name="payment_method" required>
+                <option value="наличными">Наличными</option>
+                <option value="переводом по номеру телефона">Переводом по номеру телефона</option>
+            </select>
+            
+            <button type="submit">Отправить заявку</button>
+        </form>
+        
+        <div class="back">
+            <a href="/my">Назад к моим заявкам</a>
+        </div>
+    </div>
+</body>
+</html>

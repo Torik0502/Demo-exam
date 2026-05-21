@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Мои заявки</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #ffffff; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: #ffffff; border-radius: 10px; padding: 20px; }
+        h1 { text-align: center; margin-bottom: 20px; color: #1e3c72; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ffffff; padding: 10px; text-align: left; }
+        th { background: #1e3c72; color: #ffffff; }
+        .btn { display: inline-block; padding: 5px 10px; background: #007bff; color: #ffffff; text-decoration: none; border-radius: 3px; }
+        .btn-green { background: #28a745; }
+        .top-bar { display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .logout { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <div>
+                <a href="/" class="btn">На главную</a>
+                <a href="/create" class="btn btn-green">+ Новая заявка</a>
+            </div>
+            <a href="/logout" class="btn logout">Выйти</a>
+        </div>
+        <h1>Мои заявки</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Курс</th>
+                    <th>Дата начала</th>
+                    <th>Оплата</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requests %}
+                <tr>
+                    <td>{{ req.id }}</td>
+                    <td>{{ req.course_name }}</td>
+                    <td>{{ req.start_date }}</td>
+                    <td>{{ req.payment_method }}</td>
+                    <td>{{ req.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
