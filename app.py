@@ -19,6 +19,15 @@ class User(db.Model):
     email = db.Column(db.String(120), nullable=False)
 
 
+# таблица заявок
+class Request(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    course_name = db.Column(db.String(200), nullable=False)
+    start_date = db.Column(db.String(20), nullable=False)
+    payment_method = db.Column(db.String(50), nullable=False)
+    status = db.Column(db.String(50), default='Новое')
+
 # валидация
 def valid_login(login):
     return re.match(r'^[a-zA-Z0-9]{6,}$', login) is not None
@@ -31,6 +40,9 @@ def valid_phone(phone):
 
 def valid_email(email):
     return re.match(r'^[^@]+@[^@]+\.[^@]+$', email) is not None
+
+def valid_date(date):
+    return re.match(r'^\d{2}\.\d{2}\.\d{4}$', date) is not None
 
 
 @app.route('/')
@@ -51,7 +63,7 @@ def register():
         if not valid_login(login):
             error = 'Логин: 6+ символов, только латиница и цифры'
         elif not valid_password(password):
-            error = 'Пароль: 8+ символов'
+            error = 'Пароль: минимум 8 символов'
         elif not valid_phone(phone):
             error = 'Телефон: формат 8(999)123-45-67'
         elif not valid_email(email):
@@ -95,13 +107,66 @@ def logout():
     return redirect(url_for('index'))
 
 
-#заглушка для админки
+@app.route('/create', methods=['GET', 'POST'])
+def create():
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+    
+    error = None
+    if request.method == 'POST':
+        course = request.form['course_name']
+        date = request.form['start_date']
+        payment = request.form['payment_method']
+        
+        if not valid_date(date):
+            error = 'Неверный формат даты. ДД.ММ.ГГГГ'
+        else:
+            req = Request(
+                user_id=session['user_id'],
+                course_name=course,
+                start_date=date,
+                payment_method=payment,
+                status='Новое'
+            )
+            db.session.add(req)
+            db.session.commit()
+            return redirect(url_for('my'))
+    
+    return render_template('create.html', error=error)
+
+
+@app.route('/my')
+def my():
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+    
+    requests = Request.query.filter_by(user_id=session['user_id']).all()
+    return render_template('my_requests.html', requests=requests)
+
+
 @app.route('/admin')
 def admin():
-    return "<h1>Админ-панель в разработке</h1>"
+    if not session.get('admin'):
+        return redirect(url_for('login'))
+    
+    all_requests = Request.query.all()
+    return render_template('admin.html', requests=all_requests)
 
+
+@app.route('/status/<int:rid>/<status>')
+def status(rid, status):
+    if not session.get('admin'):
+        return redirect(url_for('login'))
+    
+    req = Request.query.get(rid)
+    if req:
+        req.status = status
+        db.session.commit()
+    return redirect(url_for('admin'))
 
 if __name__ == '__main__':
     with app.app_context():
+        db.drop_all()
         db.create_all()
+        print('База данных создана!')
     app.run(debug=True)
